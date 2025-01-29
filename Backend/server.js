@@ -4,6 +4,8 @@ const express = require("express");
 
 const workoutsRoutes = require("./routes/workouts");
 
+const usersRoutes = require("./routes/users");
+
 const mongoose = require("mongoose");
 
 const app = express();
@@ -25,6 +27,8 @@ app.use((req, res, next) => {
 
 //Routes
 app.use("/api/workouts", workoutsRoutes);
+
+app.use("/api/user", usersRoutes);
 
 app.use('/uploads', express.static('uploads'));
 
