@@ -30,7 +30,7 @@ function Signup() {
       } else {
         setError(null);
         localStorage.setItem("user", JSON.stringify(json));
-        dispatch({ type: "SIGNUP", payload: json });
+        dispatch({ type: "LOGIN", payload: json });
       }
     } catch (err) {
       setError("Something went wrong");

@@ -55,7 +55,7 @@ const Navbar = () => {
           {user && (
             <div style={{ display: "flex", alignItems: "center" }}>
               <span style={{padding: "10px"}}>{user.email}</span>
-              <button onClick={handleLogout}>Log out</button>
+              <button className="button-reverse" onClick={handleLogout}>Log out</button>
             </div>
           )}
           {!user && (

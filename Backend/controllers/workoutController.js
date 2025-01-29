@@ -20,6 +20,7 @@ const upload = multer({ storage: storage });
 
 //GET all workouts
 const getAllWorkouts = async (req, res) => {
+  const user_id = req.user._id;
   try {
     const offset = parseInt(req.query.offset) || 0;
     const limit = parseInt(req.query.limit) || 10;
@@ -49,6 +50,7 @@ const getAllWorkouts = async (req, res) => {
 
     //Building a qyuery object
     const query = {
+      user_id,
       title: { $regex: new RegExp(search, "i") },
     };
 
@@ -61,6 +63,7 @@ const getAllWorkouts = async (req, res) => {
     }
 
     const totalItems = await workout.countDocuments({
+      user_id,
       title: { $regex: new RegExp(search, "i") },
     });
 
@@ -114,12 +117,17 @@ const createWorkout = async (req, res) => {
     const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
 
     try {
+      const user_id = req.user._id;
+      if (!user_id) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
       // Create a new workout entry in the database
       const newWorkout = await workout.create({
         title,
         reps,
         sets,
         description,
+        user_id,
         image: imagePath, // save the image path in the document
       });
 
