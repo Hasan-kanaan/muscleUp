@@ -20,23 +20,25 @@ const upload = multer({ storage: storage });
 
 //GET all workouts
 const getAllWorkouts = async (req, res) => {
+  const user_id = req.user._id;
   try {
-
     const offset = parseInt(req.query.offset) || 0;
     const limit = parseInt(req.query.limit) || 10;
-    const search = req.query.search || '';
+    const search = req.query.search || "";
     const reps = req.query.reps;
     const sets = req.query.sets;
 
     //Validate page and limit
     if (isNaN(offset) || offset < 0) {
-      return res.status(400).json({ error: "Offset must be a positive number" });
+      return res
+        .status(400)
+        .json({ error: "Offset must be a positive number" });
     }
 
     if (isNaN(limit) || limit < 1) {
       return res.status(400).json({ error: "Limit must be a positive number" });
     }
-    if (typeof search !== 'string') {
+    if (typeof search !== "string") {
       return res.status(400).json({ error: "Search must be a string" });
     }
     if (reps !== undefined && (isNaN(reps) || reps < 0)) {
@@ -48,19 +50,21 @@ const getAllWorkouts = async (req, res) => {
 
     //Building a qyuery object
     const query = {
-      title: { $regex: new RegExp(search, 'i') },
+      user_id,
+      title: { $regex: new RegExp(search, "i") },
     };
 
-    if(reps !== undefined && reps != 0) {
+    if (reps !== undefined && reps != 0) {
       query.reps = reps;
     }
 
-    if(sets !== undefined && sets != 0) {
+    if (sets !== undefined && sets != 0) {
       query.sets = sets;
     }
 
     const totalItems = await workout.countDocuments({
-      title: { $regex: new RegExp(search, 'i') },
+      user_id,
+      title: { $regex: new RegExp(search, "i") },
     });
 
     const workouts = await workout
@@ -73,7 +77,7 @@ const getAllWorkouts = async (req, res) => {
       workouts,
       pagination: {
         totalItems,
-        currentPage: Math.ceil((offset / limit) + 1),
+        currentPage: Math.ceil(offset / limit + 1),
         hasNextPage: totalItems > offset + limit,
         hasPreviousPage: offset > 0,
       },
@@ -113,12 +117,17 @@ const createWorkout = async (req, res) => {
     const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
 
     try {
+      const user_id = req.user._id;
+      if (!user_id) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
       // Create a new workout entry in the database
       const newWorkout = await workout.create({
         title,
         reps,
         sets,
         description,
+        user_id,
         image: imagePath, // save the image path in the document
       });
 
@@ -134,14 +143,24 @@ const createWorkout = async (req, res) => {
 //DELETE a workout
 const deleteWorkout = async (req, res) => {
   const { id } = req.params;
+
+  // Check if the ID is valid
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ message: "Workout not found" });
+    return res.status(400).json({ message: "Invalid Workout ID" });
   }
-  const deletedWorkout = await workout.findOneAndDelete({ _id: id });
-  if (!deletedWorkout) {
-    res.status(404).json({ message: "Workout not found" });
+
+  try {
+    const deletedWorkout = await workout.findOneAndDelete({ _id: id });
+    if (!deletedWorkout) {
+      return res.status(404).json({ message: "Workout not found" });
+    }
+    res.status(200).json({ message: "Workout deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ message: "An error occurred while deleting the workout" });
   }
-  res.status(200).json({ message: "Workout deleted successfully" });
 };
 
 //PATCH a workout

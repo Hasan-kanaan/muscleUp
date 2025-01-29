@@ -1,0 +1,110 @@
+.singleWOrkout {
+  .singleWorout-data {
+    padding: 2rem 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    .SingleWorkout-filed-Top{
+        display: flex;
+        justify-content: space-between;
+        // align-items: center;
+    }
+    .SingleWorkout-filed {
+      display: flex;
+    //   align-items: center;
+      gap: 1rem;
+      width: 80%;
+      label {
+        font-size: 1.25rem;
+        font-weight: 500;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .SingleWorkout-filed-title {
+        font-size: 1.25rem;
+        font-weight: 500;
+        color: var(--primary);
+        width: 80%;
+      }
+      .SingleWorkout-filed-text {
+        font-size: 1.25rem;
+        font-weight: 500;
+        width: 80%;
+      }
+      input {
+        padding: 10px;
+        margin: 0;
+        width: 100%;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      textarea {
+        resize: vertical;
+        padding: 10px;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        width: 100%;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+    }
+  }
+  .updatedAt {
+    font-size: 1rem;
+    color: grey;
+    font-style: italic;
+    width: fit-content;
+    margin-left: auto;
+    padding-right: 20px;
+  }
+  .editButton{
+    // position: absolute;
+    // top: calc( 7rem + 300px);
+    // right: 20px;
+    
+  }
+  button {
+    width: 150px;
+    background: var(--primary);
+    border: 0;
+    color: #fff;
+    padding: 10px;
+    font-family: "Poppins";
+    border-radius: 4px;
+    cursor: pointer;
+    transition: ease 0.4s;
+  }
+  button:hover{
+    background: #fff;
+    color: var(--primary);
+  }
+}
+/* Single Workout */
+.singleWOrkout{
+    width: 100%;
+    padding-top: 5rem;
+  }
+  .singleWOrkout .singleWorkout-banner{
+    width: calc(100% - 40px);
+    margin: 0 auto;
+    height: 300px;
+    cursor: pointer;
+    position: relative;
+    &:hover .singleWorkout-banner-image {
+        filter: blur(3px);
+        // transition: filter 0.1s ease;
+      }
+  }
+  .singleWorkout-banner:hover .upload{
+    transform: scale(1.2);
+    transition: transform 0.3s ease;
+  }
+  .upload{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    cursor: pointer;
+    width: 50px;
+  }
