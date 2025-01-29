@@ -1,6 +1,7 @@
 require("dotenv").config();
 
 const express = require("express");
+const path = require("path");
 
 const workoutsRoutes = require("./routes/workouts");
 
@@ -15,6 +16,9 @@ const cors = require('cors');
 const multer = require ('multer');
 
 //Middleware
+
+
+
 
 app.use(express.json());
 
@@ -31,6 +35,15 @@ app.use("/api/workouts", workoutsRoutes);
 app.use("/api/user", usersRoutes);
 
 app.use('/uploads', express.static('uploads'));
+
+// Serve the React frontend
+app.use(express.static(path.join(__dirname, "../client/build")));
+
+
+// Handle React routes
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
+});
 
 //Connect to MongoDB
 mongoose
