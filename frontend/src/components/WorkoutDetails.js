@@ -1,19 +1,27 @@
 import { useWorkoutsContext } from "../hooks/useWorkoutsContext";
-
-// date fns
 import formatDistanceToNow from "date-fns/formatDistanceToNow";
 import Tooltip from "./Tooltip/Tooltip";
 import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../hooks/useAuthContext";
 
 const WorkoutDetails = ({ workout }) => {
+  const { user } = useAuthContext();
   const { dispatch } = useWorkoutsContext();
   const navigate = useNavigate();
 
-  const handleClick = async () => {
+  const handleClick = async (e) => {
+    e.stopPropagation();
+    if (!user) {
+      return new Error("You must be logged in");
+    }
+
     const response = await fetch(
       process.env.REACT_APP_API + "/api/workouts/" + workout._id,
       {
         method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${user.token}`,
+        },
       }
     );
     const json = await response.json();
@@ -24,9 +32,13 @@ const WorkoutDetails = ({ workout }) => {
   };
 
   return (
-    <div className="workout-details" style={{ cursor: "pointer" }} onClick={() => {
-      navigate("/" + workout._id);
-    }}>
+    <div
+      className="workout-details"
+      style={{ cursor: "pointer" }}
+      onClick={() => {
+        navigate("/" + workout._id);
+      }}
+    >
       <div className="workout-details-field">
         <h4>
           <Tooltip title={workout.title}>{workout.title}</Tooltip>
@@ -49,10 +61,21 @@ const WorkoutDetails = ({ workout }) => {
           })}
         </p>
       </div>
-      <div className="workout-details-banner" style={{ width: "50%", flexGrow: 0, background: 
-        workout.image ? "none" : "#1aac83"
-       }}>
-       {workout?.image && <img src={process.env.REACT_APP_API + workout.image} alt="" style={{width: "100%", height: "100%"}} />}
+      <div
+        className="workout-details-banner"
+        style={{
+          width: "50%",
+          flexGrow: 0,
+          background: workout.image ? "none" : "#1aac83",
+        }}
+      >
+        {workout?.image && (
+          <img
+            src={process.env.REACT_APP_API + workout.image}
+            alt=""
+            style={{ width: "100%", height: "100%" }}
+          />
+        )}
       </div>
       <span
         className="material-symbols-outlined"

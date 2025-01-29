@@ -2,8 +2,10 @@ import { useRef, useState } from "react";
 import { useWorkoutsContext } from "../hooks/useWorkoutsContext";
 import upload from "../assets/images/upload-svgrepo-com.svg";
 import checked from "../assets/images/checked-svgrepo-com.svg";
+import { useAuthContext } from "../hooks/useAuthContext";
 
 const WorkoutForm = () => {
+  const { user } = useAuthContext();
   const { dispatch } = useWorkoutsContext();
   const imgInputRef = useRef(null);
 
@@ -20,6 +22,10 @@ const WorkoutForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if(!user){
+      return new Error("You must be logged in");
+    }
+
     const formData = new FormData();
 
     formData.append("title", workout.title);
@@ -33,6 +39,9 @@ const WorkoutForm = () => {
     const response = await fetch(process.env.REACT_APP_API + "/api/workouts", {
       method: "POST",
       body: formData,
+      headers: {
+        "Authorization": `Bearer ${user.token}`,
+      },
     });
     const json = await response.json();
 

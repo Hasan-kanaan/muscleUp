@@ -2,9 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import "./SingleWorkout.scss";
 import upload from "../../assets/images/upload-black.svg";
+import { useAuthContext } from "../../hooks/useAuthContext";
+
 
 function SingleWorkout() {
   const { id } = useParams();
+  const { user } = useAuthContext();
   const [workout, setWorkout] = useState({
     title: "",
     description: "",
@@ -21,6 +24,7 @@ function SingleWorkout() {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": "Bearer " + user.token,
           },
         }
       );
@@ -29,8 +33,10 @@ function SingleWorkout() {
         setWorkout(json);
       }
     };
-    fectchSingleWorkout();
-  }, [id]);
+    if (user) {
+      fectchSingleWorkout();
+    }
+  }, [id, user]);
 
   const [edit, setEdit] = useState(false);
 
@@ -92,31 +98,34 @@ function SingleWorkout() {
     uploadImage();
   }, [uploadFile]);
 
-    const editWorkout = async () => {
-        const workoutData = {
-          title: workout.title,
-          description: workout.description,
-          reps: workout.reps,
-          sets: workout.sets,
-        };
-  
-        try {
-          const response = await fetch(process.env.REACT_APP_API + `/api/workouts/${id}`, {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(workoutData),
-          });
-          const json = await response.json();
-          if (response.ok) {
-            setWorkout({ ...workout, image: json.image });
-            setEdit(false);
-          }
-        } catch (error) {
-          console.error("Error editing workout:", error);
-        }
+  const editWorkout = async () => {
+    const workoutData = {
+      title: workout.title,
+      description: workout.description,
+      reps: workout.reps,
+      sets: workout.sets,
     };
+
+    try {
+      const response = await fetch(
+        process.env.REACT_APP_API + `/api/workouts/${id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(workoutData),
+        }
+      );
+      const json = await response.json();
+      if (response.ok) {
+        setWorkout({ ...workout, image: json.image });
+        setEdit(false);
+      }
+    } catch (error) {
+      console.error("Error editing workout:", error);
+    }
+  };
 
   return (
     <div className="singleWOrkout">
